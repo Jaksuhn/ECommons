@@ -47,7 +47,7 @@ public unsafe static class RenderDisableManager
         }
         Initialized = true;
         FrameCounter = &Framework.Instance()->FrameCounter;
-        RenderDisabled = (byte*)(((nint)Manager.Instance()) + 230232);
+        RenderDisabled = (byte*)&Manager.Instance()->Is3DRenderingDisabled;
         RenderDisableRequests = Svc.PluginInterface.GetOrCreateData<HashSet<uint>>(Name_RenderDisableRequests, () => []);
         RenderDisableProcessingFramecount = Svc.PluginInterface.GetOrCreateData<uint[]>(Name_RenderDisableProcessingFramecount, () => [0]);
         Svc.Framework.Update += Framework_Update;
