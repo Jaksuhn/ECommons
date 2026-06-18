@@ -462,6 +462,18 @@ public static class MathHelper
         return orderedList;
     }
 
+    [OverloadResolutionPriority(1)]
+    public static List<EnumerationResult<T>> EnumerateObjectsClockwiseEx<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, Vector2 startingPosition)
+    {
+        var orderedList = objects.Select(x =>
+        {
+            var relAngle = MathHelper.GetRelativeAngle(centerPosition, startingPosition);
+            var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
+            return new EnumerationResult<T>(x, a);
+        }).OrderBy(x => x.AngleDegrees).ToList();
+        return orderedList;
+    }
+
     /// <summary>
     /// 
     /// </summary>
@@ -473,12 +485,26 @@ public static class MathHelper
     /// <returns></returns>
     public static List<T> EnumerateObjectsClockwise<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, float startingAngle)
     {
-        var orderedList = objects.OrderBy(x =>
+        return [.. EnumerateObjectsClockwiseEx(objects, getPosition, centerPosition, startingAngle).Select(x => x.Object)];
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="objects"></param>
+    /// <param name="getPosition"></param>
+    /// <param name="centerPosition"></param>
+    /// <param name="startingAngle">Degrees from North. </param>
+    /// <returns></returns>
+    public static List<EnumerationResult<T>> EnumerateObjectsClockwiseEx<T>(IEnumerable<T> objects, Func<T, Vector2> getPosition, Vector2 centerPosition, float startingAngle)
+    {
+        var orderedList = objects.Select(x => 
         {
-            var relAngle = startingAngle;
+            var relAngle = MathHelper.Mod(startingAngle, 360);
             var a = (MathHelper.GetRelativeAngle(centerPosition, getPosition(x)) - relAngle + 360) % 360;
-            return a;
-        }).ToList();
+            return new EnumerationResult<T>(x, a);
+        }).OrderBy(x => x.AngleDegrees).ToList();
         return orderedList;
     }
 }
